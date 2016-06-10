@@ -13,7 +13,6 @@ Every localtunnel client opens ten connections to the server on startup and hope
 ## Install
 ``` shell
 $ npm install -g underpass
-$ which up    # => /usr/local/bin
 ```
 
 ## Command line usage
