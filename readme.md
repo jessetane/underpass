@@ -1,11 +1,20 @@
 # underpass
 An efficient, secure [localtunnel]() clone.
 
+[![npm](http://img.shields.io/npm/v/underpass.svg?style=flat-square)](http://www.npmjs.org/underpass)
+[![tests](https://img.shields.io/travis/jessetane/underpass.svg?style=flat-square&branch=master)](https://travis-ci.org/jessetane/underpass)
+
 ## Why
 localtunnel is super awesome, but it goes down frequently or kicks clients at odd intervals. Also, although it secures connections between the server and the outside world, the actual tunnels themselves are unprotected.
 
 ## How
 Every localtunnel client opens ten connections to the server on startup and hopes that this number will be suitable for the majority of situations. Generally this works well enough, but if more than ten connections are required, some external consumers may starve; conversely if there is only a single consumer, the other nine connections go to waste. So, instead of trying to guess the perfect number of connections to open, this module sets up a dedicated "control" connection and uses it to ask for additional connections on demand.
+
+## Install
+``` shell
+$ npm install -g underpass
+$ which up    # => /usr/local/bin
+```
 
 ## Command line usage
 
@@ -65,7 +74,7 @@ var client = createClient({
 })
 
 client.on('ready', () => {
-  var external = http.request({
+  http.request({
     hostname: 'localhost',
     port: '3000',
     method: 'POST',
