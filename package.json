@@ -1,6 +1,6 @@
 {
   "name": "underpass",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An efficient and secure localtunnel clone",
   "bin": {
     "up": "index.js"
