@@ -1,5 +1,5 @@
 # underpass
-An efficient, secure [localtunnel]() clone.
+An efficient, secure [localtunnel](https://github.com/localtunnel/localtunnel) clone.
 
 [![npm](http://img.shields.io/npm/v/underpass.svg?style=flat-square)](http://www.npmjs.org/underpass)
 [![tests](https://img.shields.io/travis/jessetane/underpass.svg?style=flat-square&branch=master)](https://travis-ci.org/jessetane/underpass)
