@@ -17,6 +17,7 @@
   "devDependencies": {
     "tape": "^4.5.1"
   },
+  "repository": "https://github.com/jessetane/underpass",
   "author": "jesse.tane@gmail.com",
   "license": "Public domain"
 }
