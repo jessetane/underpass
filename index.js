@@ -5,7 +5,7 @@ var minimist = require('minimist')
 var createClient = require('./src/client')
 var createServer = require('./src/server')
 
-var argv = minimist(process.argv.slice(2))
+var argv = minimist(process.argv.slice(2), { string: [ 's', 'secure' ]})
 var args = argv._
 
 var secure = argv.s || argv.secure || process.env.SECURE || true
