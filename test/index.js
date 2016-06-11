@@ -15,6 +15,12 @@ var ca = cert
 tape('plain tcp', t => {
   t.plan(1)
 
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+  })
+
   var internal = net.createServer(socket => {
     socket.on('data', d => socket.write(d.toString().toUpperCase()))
   }).listen('8080')
@@ -27,13 +33,8 @@ tape('plain tcp', t => {
     port: '8080',
   })
 
-  var server = createServer({
-    tunnelPort: '9000',
-    controlPort: '9001',
-    externalPort: '9002',
-  })
-
-  var external = net.connect('9002', 'localhost', () => {
+  client.on('ready', () => {
+    var external = net.connect('9002', 'localhost')
     external.on('data', d => {
       t.equal(d.toString(), 'HI')
       external.destroy()
@@ -41,27 +42,12 @@ tape('plain tcp', t => {
       internal.close()
       server.close()
     })
+    external.write('test\nhi')
   })
-
-  external.write('test\nhi')
 })
 
 tape('plain tcp (secure)', t => {
   t.plan(1)
-
-  var internal = net.createServer(socket => {
-    socket.on('data', d => socket.write(d.toString().toUpperCase()))
-  }).listen('8080')
-
-  var client = createClient({
-    tunnelHost: '127.0.0.1',
-    tunnelPort: '9000',
-    controlPort: '9001',
-    name: 'test',
-    port: '8080',
-    secure: true,
-    ca,
-  })
 
   var server = createServer({
     tunnelPort: '9000',
@@ -72,7 +58,22 @@ tape('plain tcp (secure)', t => {
     key,
   })
 
-  var external = tls.connect('9002', 'localhost', { ca }, () => {
+  var internal = net.createServer(socket => {
+    socket.on('data', d => socket.write(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+    secure: true,
+    ca,
+  })
+
+  client.on('ready', () => {
+    var external = tls.connect('9002', 'localhost', { ca })
     external.on('data', d => {
       t.equal(d.toString(), 'HI')
       external.destroy()
@@ -80,25 +81,12 @@ tape('plain tcp (secure)', t => {
       internal.close()
       server.close()
     })
+    external.write('test\nhi')
   })
-
-  external.write('test\nhi')
 })
 
 tape('plain tcp (secure external only)', t => {
   t.plan(1)
-
-  var internal = net.createServer(socket => {
-    socket.on('data', d => socket.write(d.toString().toUpperCase()))
-  }).listen('8080')
-
-  var client = createClient({
-    tunnelHost: '127.0.0.1',
-    tunnelPort: '9000',
-    controlPort: '9001',
-    name: 'test',
-    port: '8080',
-  })
 
   var server = createServer({
     tunnelPort: '9000',
@@ -109,7 +97,20 @@ tape('plain tcp (secure external only)', t => {
     key,
   })
 
-  var external = tls.connect('9002', 'localhost', { ca }, () => {
+  var internal = net.createServer(socket => {
+    socket.on('data', d => socket.write(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+  })
+
+  client.on('ready', () => {
+    var external = tls.connect('9002', 'localhost', { ca })
     external.on('data', d => {
       t.equal(d.toString(), 'HI')
       external.destroy()
@@ -117,27 +118,12 @@ tape('plain tcp (secure external only)', t => {
       internal.close()
       server.close()
     })
+    external.write('test\nhi')
   })
-
-  external.write('test\nhi')
 })
 
 tape('plain tcp (secure internal only)', t => {
   t.plan(1)
-
-  var internal = net.createServer(socket => {
-    socket.on('data', d => socket.write(d.toString().toUpperCase()))
-  }).listen('8080')
-
-  var client = createClient({
-    tunnelHost: '127.0.0.1',
-    tunnelPort: '9000',
-    controlPort: '9001',
-    name: 'test',
-    port: '8080',
-    secure: true,
-    ca,
-  })
 
   var server = createServer({
     tunnelPort: '9000',
@@ -148,7 +134,22 @@ tape('plain tcp (secure internal only)', t => {
     key,
   })
 
-  var external = net.connect('9002', 'localhost', () => {
+  var internal = net.createServer(socket => {
+    socket.on('data', d => socket.write(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+    secure: true,
+    ca,
+  })
+
+  client.on('ready', () => {
+    var external = net.connect('9002', 'localhost')
     external.on('data', d => {
       t.equal(d.toString(), 'HI')
       external.destroy()
@@ -156,64 +157,57 @@ tape('plain tcp (secure internal only)', t => {
       internal.close()
       server.close()
     })
-  })
-
-  client.on('ready', () => {
     external.write('test\nhi')
   })
 })
 
 tape('plain tcp (secure doesn\'t accept self-signed certs)', t => {
-  t.plan(2)
+  t.plan(1)
+
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+    secure: true,
+    cert,
+    key,
+  })
 
   var internal = net.createServer(socket => {
     socket.on('data', d => socket.write(d.toString().toUpperCase()))
   }).listen('8080')
 
   var client = createClient({
-    tunnelHost: '127.0.0.1',
+    tunnelHost: 'localhost',
     tunnelPort: '9000',
     controlPort: '9001',
     name: 'test',
     port: '8080',
     secure: true,
-    // ca
+    ca
   })
 
-  var server = createServer({
-    tunnelPort: '9000',
-    controlPort: '9001',
-    externalPort: '9002',
-    secure: true,
-    cert,
-    key,
+  client.on('ready', () => {
+    var external = tls.connect('9002', 'localhost', { /* ca */ })
+    external.on('error', err => {
+      t.equal(err.message, 'self signed certificate')
+      external.destroy()
+      client.destroy()
+      internal.close()
+      server.close()
+    })
   })
-
-  var external = tls.connect('9002', 'localhost', { /* ca */ })
-
-  external.on('error', err => {
-    t.equal(err.message, 'self signed certificate')
-    done()
-  })
-
-  client.on('error', err => {
-    t.equal(err.message, 'self signed certificate')
-    done()
-  })
-
-  var n = 2
-  function done () {
-    if (--n > 0) return
-    external.destroy()
-    client.destroy()
-    internal.close()
-    server.close()
-  }
 })
 
 tape('http host header', t => {
   t.plan(1)
 
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+  })
+
   var internal = http.createServer((req, res) => {
     req.on('data', d => res.end(d.toString().toUpperCase()))
   }).listen('8080')
@@ -226,47 +220,28 @@ tape('http host header', t => {
     port: '8080',
   })
 
-  var server = createServer({
-    tunnelPort: '9000',
-    controlPort: '9001',
-    externalPort: '9002',
-  })
-
-  var external = http.request({
-    hostname: 'localhost',
-    port: '9002',
-    method: 'POST',
-    headers: {
-      Host: 'test.localhost'
-    }
-  }, res => {
-    res.on('data', d => {
-      t.equal(d.toString(), 'HI')
-      client.destroy()
-      internal.close()
-      server.close()
+  client.on('ready', () => {
+    var external = http.request({
+      hostname: 'localhost',
+      port: '9002',
+      method: 'POST',
+      headers: {
+        Host: 'test.localhost'
+      }
+    }, res => {
+      res.on('data', d => {
+        t.equal(d.toString(), 'HI')
+        client.destroy()
+        internal.close()
+        server.close()
+      })
     })
+    external.end('hi')
   })
-
-  external.end('hi')
 })
 
 tape('http host header (secure)', t => {
   t.plan(1)
-
-  var internal = http.createServer((req, res) => {
-    req.on('data', d => res.end(d.toString().toUpperCase()))
-  }).listen('8080')
-
-  var client = createClient({
-    tunnelHost: '127.0.0.1',
-    tunnelPort: '9000',
-    controlPort: '9001',
-    name: 'test',
-    port: '8080',
-    secure: true,
-    ca,
-  })
 
   var server = createServer({
     tunnelPort: '9000',
@@ -277,28 +252,49 @@ tape('http host header (secure)', t => {
     key,
   })
 
-  var external = https.request({
-    hostname: 'localhost',
-    port: '9002',
-    method: 'POST',
+  var internal = http.createServer((req, res) => {
+    req.on('data', d => res.end(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+    secure: true,
     ca,
-    headers: {
-      Host: 'test.bogus.com'
-    }
-  }, res => {
-    res.on('data', d => {
-      t.equal(d.toString(), 'HI')
-      client.destroy()
-      internal.close()
-      server.close()
-    })
   })
 
-  external.end('hi')
+  client.on('ready', () => {
+    var external = https.request({
+      hostname: 'localhost',
+      port: '9002',
+      method: 'POST',
+      ca,
+      headers: {
+        Host: 'test.bogus.com'
+      }
+    }, res => {
+      res.on('data', d => {
+        t.equal(d.toString(), 'HI')
+        client.destroy()
+        internal.close()
+        server.close()
+      })
+    })
+    external.end('hi')
+  })
 })
 
 tape('http bad name (tunnel not found)', t => {
   t.plan(1)
+
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+  })
 
   var internal = http.createServer((req, res) => {
     req.on('data', d => res.end(d.toString().toUpperCase()))
@@ -312,33 +308,34 @@ tape('http bad name (tunnel not found)', t => {
     port: '8080',
   })
 
-  var server = createServer({
-    tunnelPort: '9000',
-    controlPort: '9001',
-    externalPort: '9002',
-  })
-
-  var external = http.request({
-    hostname: 'localhost',
-    port: '9002',
-    method: 'POST',
-    headers: {
-      Host: 'bogus.localhost'
-    }
-  }, res => {
-    res.on('data', d => {
-      t.equal(d.toString(), 'tunnel not found')
-      client.destroy()
-      internal.close()
-      server.close()
+  client.on('ready', () => {
+    var external = http.request({
+      hostname: 'localhost',
+      port: '9002',
+      method: 'POST',
+      headers: {
+        Host: 'bogus.localhost'
+      }
+    }, res => {
+      res.on('data', d => {
+        t.equal(d.toString(), 'tunnel not found')
+        client.destroy()
+        internal.close()
+        server.close()
+      })
     })
+    external.end('hi')
   })
-
-  external.end('hi')
 })
 
 tape('multi http', t => {
   t.plan(2)
+
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002'
+  })
 
   var internalUpper = http.createServer((req, res) => {
     req.on('data', d => res.end(d.toString().toUpperCase()))
@@ -364,12 +361,6 @@ tape('multi http', t => {
     port: '8081',
   })
 
-  var server = createServer({
-    tunnelPort: '9000',
-    controlPort: '9001',
-    externalPort: '9002'
-  })
-
   var externalUpper = http.request({
     hostname: 'localhost',
     port: '9002',
@@ -380,7 +371,7 @@ tape('multi http', t => {
   }, res => {
     res.on('data', d => {
       t.equal(d.toString(), 'HI')
-      done()
+      end()
     })
   })
 
@@ -394,15 +385,21 @@ tape('multi http', t => {
   }, res => {
     res.on('data', d => {
       t.equal(d.toString(), 'hi')
-      done()
+      end()
     })
   })
 
-  var n = 2
-  externalUpper.end('hi')
-  externalLower.end('HI')
+  var n = 0
+  clientLower.on('ready', begin)
+  clientLower.on('ready', begin)
 
-  function done () {
+  function begin () {
+    if (++n < 2) return
+    externalUpper.end('hi')
+    externalLower.end('HI')
+  }
+
+  function end () {
     if (--n > 0) return
     clientUpper.destroy()
     clientLower.destroy()
@@ -434,14 +431,13 @@ tape('cli', t => {
     ])
 
     client.stdout.once('data', () => {
-      var external = net.connect('9002', 'localhost', () => {
-        external.on('data', d => {
-          t.equal(d.toString(), 'HI')
-          external.destroy()
-          server.kill('SIGTERM')
-          client.kill('SIGTERM')
-          internal.close()
-        })
+      var external = net.connect('9002', 'localhost')
+      external.on('data', d => {
+        t.equal(d.toString(), 'HI')
+        external.destroy()
+        server.kill('SIGTERM')
+        client.kill('SIGTERM')
+        internal.close()
       })
       external.write('test\nhi')
     })
