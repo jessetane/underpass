@@ -47,9 +47,7 @@ if (args[0] === 'serve') {
     key,
   }
   createServer(opts).on('ready', () => {
-    console.log(`tunnel server listening on ${opts.tunnelPort}`)
-    console.log(`control server listening on ${opts.controlPort}`)
-    console.log(`external server listening on ${opts.externalPort}`)
+    console.log(`tunnel, control and external servers listening on ${opts.tunnelPort}, ${opts.controlPort} and ${opts.externalPort} respectively`)
   })
 } else {
   var opts = {
