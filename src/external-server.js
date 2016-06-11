@@ -2,12 +2,6 @@ var tls = require('tls')
 var net = require('net')
 var debug = require('debug')('tunnels:external-server')
 
-var httpNotFound = `HTTP/1.1 404 Not Found
-Content-Type: text/html; charset=utf-8
-Status: 404 Not Found
-
-tunnel not found`
-
 module.exports = function (opts) {
   var hosts = opts.hosts
   var secure = opts.secure
@@ -50,16 +44,18 @@ module.exports = function (opts) {
         host.call('connect', err => {
           if (err) {
             debug(err.message)
-            handleError()
+            handleError('500', err.message)
           }
         })
       } else {
-        handleError()
+        handleError('404', 'tunnel not found')
       }
 
-      function handleError () {
+      function handleError (status, message) {
         if (isHTTP) {
-          socket.end(httpNotFound)
+          socket.end(`HTTP/1.1 ${status}
+Content-Type: text/html; charset=utf-8
+Status: ${status}\n\n${message}`)
         } else {
           socket.destroy()
         }
