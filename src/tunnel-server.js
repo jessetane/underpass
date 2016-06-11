@@ -5,7 +5,7 @@ var debug = require('debug')('tunnels:tunnel-server')
 module.exports = function (opts) {
   var hosts = opts.hosts
   var secure = opts.secure
-  var tlsOpts = { key: opts.key, cert: opts.cert }
+  var tlsOpts = { key: opts.key, cert: opts.cert, SNICallback: opts.SNICallback }
   var tunnelPort = opts.tunnelPort
 
   var server = secure && secure !== 'external'

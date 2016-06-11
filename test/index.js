@@ -409,6 +409,69 @@ tape('multi http', t => {
   }
 })
 
+tape('SNI', t => {
+  t.plan(4)
+
+  var internal = http.createServer((req, res) => {
+    req.on('data', d => res.end(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var n = 0
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+    secure: true,
+    SNICallback: (hostname, cb) => {
+      n++
+      if (n === 1) {
+        // control connect
+        t.equal(hostname, 'localhost')
+      } else if (n === 2) {
+        // external connect
+        t.equal(hostname, 'test.bogus.com')
+      } else {
+        // tunnel connect
+        t.equal(hostname, 'localhost')
+      }
+      cb(null, tls.createSecureContext({
+        cert,
+        key,
+      }))
+    }
+  })
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+    secure: true,
+    ca,
+  })
+
+  client.on('ready', () => {
+    var external = https.request({
+      hostname: 'localhost',
+      port: '9002',
+      method: 'POST',
+      ca,
+      headers: {
+        Host: 'test.bogus.com'
+      }
+    }, res => {
+      res.on('data', d => {
+        t.equal(d.toString(), 'HI')
+        client.destroy()
+        internal.close()
+        server.close()
+      })
+    })
+    external.end('hi')
+  })
+})
+
 tape('cli', t => {
   t.plan(1)
 

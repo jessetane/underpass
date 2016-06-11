@@ -10,8 +10,8 @@ module.exports = function (opts) {
   opts.emit = emitter.emit.bind(emitter)
 
   if (opts.secure) {
-    if (!opts.key || !opts.cert) {
-      opts.emit('error', new Error('secure mode enabled but missing key or cert'))
+    if (!opts.SNICallback && (!opts.key || !opts.cert)) {
+      opts.emit('error', new Error('secure mode enabled but missing key, cert or SNICallback'))
       return
     }
   }

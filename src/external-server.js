@@ -11,7 +11,7 @@ tunnel not found`
 module.exports = function (opts) {
   var hosts = opts.hosts
   var secure = opts.secure
-  var tlsOpts = { key: opts.key, cert: opts.cert }
+  var tlsOpts = { key: opts.key, cert: opts.cert, SNICallback: opts.SNICallback }
   var externalPort = opts.externalPort
 
   var server = secure && secure !== 'internal'
