@@ -23,7 +23,6 @@ module.exports = function (opts) {
 
   var readyCount = 3
   var openCount = 3
-  opts.connectionCount = 0
 
   // handles tunnel connections from the internal side
   opts.tunnelServer = tunnelServer(opts)

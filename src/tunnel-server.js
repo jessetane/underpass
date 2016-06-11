@@ -19,7 +19,6 @@ module.exports = function (opts) {
   })
 
   function onconnection (socket) {
-    opts.connectionCount++
     var request, host, address = `${socket.remoteAddress}:${socket.remotePort}`
     debug(`connection from ${address} did open`)
 
@@ -47,7 +46,6 @@ module.exports = function (opts) {
     })
 
     socket.on('close', () => {
-      opts.connectionCount--
       if (host) {
         if (request) {
           request.destroy()

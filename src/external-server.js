@@ -25,7 +25,6 @@ module.exports = function (opts) {
   })
 
   function onconnection (socket) {
-    opts.connectionCount++
     var host, tunnel, address = `${socket.remoteAddress}:${socket.remotePort}`
     debug(`connection from ${address} did open`)
 
@@ -73,7 +72,6 @@ module.exports = function (opts) {
     })
 
     socket.on('close', () => {
-      opts.connectionCount--
       if (host) {
         if (host.requests) {
           host.requests = host.requests.filter(request => request !== socket)
