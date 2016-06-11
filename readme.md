@@ -54,28 +54,36 @@ $ up serve [OPTION]
 
 ## JavaScript API
 ``` javascript
+var createClient = require('underpass/src/client')
+var createServer = require('underpass/src/server')
+
 var internalDevServer = http.createServer((req, res) => {
   req.on('data', d => res.end(d.toString().toUpperCase()))
 }).listen('8080')
 
-var createServer = require('underpass/src/server')
-
 var server = createServer({
-  externalPort: '3000'
+  tunnelPort: '9000',
+  controlPort: '9001',
+  externalPort: '9002',
+  // secure: true,
+  // SNICallback: (hostname, cb) => {
+  //   cb(new tls.createSecureContext({ /* cert, key */ }))
+  // }
 })
 
-var createClient = require('underpass/src/client')
-
 var client = createClient({
+  tunnelHost: 'localhost',
+  tunnelPort: '9000',
+  controlPort: '9001',
   name: 'upper-caser',
   port: '8080',
-  tunnelHost: 'localhost',
+  // secure: true
 })
 
 client.on('ready', () => {
   http.request({
     hostname: 'localhost',
-    port: '3000',
+    port: '9002',
     method: 'POST',
     headers: {
       host: 'upper-caser.localhost'
