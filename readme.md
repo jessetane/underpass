@@ -38,7 +38,7 @@ $ up serve [OPTION]
 * `-n --name ENV:NAME (random)`  
   * Tunnel identifier to request, used only by clients. Random by default
 * `-p --port ENV:PORT (8080)`  
-  * Port on localhost clients should proxy connects to
+  * Port on localhost clients should proxy connections to
 * `-h --tunnel-host ENV:TUNNEL_HOST (localhost)`  
   * Host where the underpass server is running
 * `-t --tunnel-port ENV:TUNNEL_PORT (9000)`  
