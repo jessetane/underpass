@@ -60,6 +60,6 @@ if (args[0] === 'serve') {
     ca,
   }
   createClient(opts).on('ready', externalPort => {
-    console.log(`tunnel open at ${opts.secure ? 'https' : 'http'}://${opts.name}.${opts.tunnelHost}${externalPort == '80' ? '' : `:${externalPort}`}`)
+    console.log(`tunnel open at ${opts.secure ? 'https' : 'http'}://${opts.name}.${opts.tunnelHost}`)
   })
 }
