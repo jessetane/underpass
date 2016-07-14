@@ -15,6 +15,13 @@ Every localtunnel client opens ten connections to the server on startup and hope
 $ npm install -g underpass
 ```
 
+## Demo
+There should be a server up and running at tunnels.simple-machines.io, you can try it out like so:
+``` shell
+$ up -h tunnels.simple-machines.io -n demo
+```
+This should proxy TCP connections to demo.tunnels.simple-machines.io through to your local machine on port 8080 (the default). Note that if you use a custom name for your tunnel it may take a moment for your initial connection to go through while an ssl certificate is provisioned for you.
+
 ## Command line usage
 
 #### Client
