@@ -8,7 +8,7 @@ An efficient, secure [localtunnel](https://github.com/localtunnel/localtunnel) c
 localtunnel is super awesome, but it goes down frequently or kicks clients at odd intervals. Also, although it secures connections between the server and the outside world, the actual tunnels themselves are unprotected.
 
 ## How
-Every localtunnel client opens ten connections to the server on startup and hopes that this number will be suitable for the majority of situations. Generally this works well enough, but if more than ten connections are required, some external consumers may starve; conversely if there is only a single consumer, the other nine connections go to waste. So, instead of trying to guess the perfect number of connections to open, this module sets up a dedicated "control" connection and uses it to ask for additional connections on demand.
+The localtunnel client opens ten connections to the server on startup and hopes that this number will be suitable for the majority of situations. Generally this works well enough, but if more than ten connections are required, some external consumers may starve; conversely if there is only a single consumer, the other nine connections go to waste. So, instead of trying to guess the perfect number of connections to open, this module sets up a dedicated "control" connection and uses it to ask for additional connections on demand.
 
 ## Install
 ``` shell
@@ -20,7 +20,7 @@ There should be a server up and running at tunnels.simple-machines.io, you can t
 ``` shell
 $ up -h tunnels.simple-machines.io -n demo
 ```
-This should proxy TCP connections to demo.tunnels.simple-machines.io through to your local machine on port 8080 (the default). Note that if you use a custom name for your tunnel it may take a moment for your initial connection to go through while an ssl certificate is provisioned for you.
+This should proxy TLS connections to demo.tunnels.simple-machines.io through to your local machine. Note that if you use a custom name for your tunnel it may take a moment for your initial connection to go through while a certificate is provisioned for you.
 
 ## Command line usage
 
