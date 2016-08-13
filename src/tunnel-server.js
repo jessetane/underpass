@@ -45,6 +45,7 @@ module.exports = function (opts) {
       socket.destroy()
     })
 
+    socket.on('error', noop)
     socket.on('close', () => {
       if (host) {
         if (request) {
@@ -59,3 +60,5 @@ module.exports = function (opts) {
     })
   }
 }
+
+function noop () {}

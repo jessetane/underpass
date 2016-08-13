@@ -56,6 +56,7 @@ module.exports = function (opts) {
       }
     }
 
+    socket.on('error', noop)
     socket.on('close', () => {
       if (host.name) {
         delete hosts.byName[host.name]
@@ -69,3 +70,5 @@ module.exports = function (opts) {
     })
   }
 }
+
+function noop () {}

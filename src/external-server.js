@@ -68,6 +68,7 @@ Status: ${status}\n\n${message}`)
       socket.destroy()
     })
 
+    socket.on('error', noop)
     socket.on('close', () => {
       if (host) {
         host.socket.removeListener('close', oncontrolClose)
@@ -85,3 +86,5 @@ Status: ${status}\n\n${message}`)
     }
   }
 }
+
+function noop () {}
