@@ -472,6 +472,60 @@ tape('SNI', t => {
   })
 })
 
+tape('registrant ping', t => {
+  t.plan(3)
+
+  var server = createServer({
+    tunnelPort: '9000',
+    controlPort: '9001',
+    externalPort: '9002',
+    rpcTimeout: 100,
+  })
+
+  var internal = net.createServer(socket => {
+    socket.on('data', d => socket.write(d.toString().toUpperCase()))
+  }).listen('8080')
+
+  var client = createClient({
+    tunnelHost: 'localhost',
+    tunnelPort: '9000',
+    controlPort: '9001',
+    name: 'test',
+    port: '8080',
+    ping: false
+  })
+
+  client.on('close', t.pass)
+
+  client.on('ready', () => {
+    var external = net.connect('9002', 'localhost')
+    external.on('data', d => {
+      t.equal(d.toString(), 'HI')
+
+      client = createClient({
+        tunnelHost: 'localhost',
+        tunnelPort: '9000',
+        controlPort: '9001',
+        name: 'test',
+        port: '8080'
+      })
+
+      client.on('ready', () => {
+        external = net.connect('9002', 'localhost')
+        external.on('data', d => {
+          t.equal(d.toString(), 'HI')
+          external.destroy()
+          client.destroy()
+          internal.close()
+          server.close()
+        })
+        external.write('test\nhi')
+      })
+    })
+    external.write('test\nhi')
+  })
+})
+
 tape('cli', t => {
   t.plan(1)
 
