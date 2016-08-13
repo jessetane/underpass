@@ -11,7 +11,7 @@
   "dependencies": {
     "debug": "^2.2.0",
     "minimist": "^1.2.0",
-    "rpc-engine": "^2.1.0",
+    "rpc-engine": "^2.1.1",
     "terminal-stream": "^1.1.0"
   },
   "devDependencies": {
