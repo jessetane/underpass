@@ -39,9 +39,7 @@ module.exports = function (opts) {
           debug(`tunnel connection did open`)
           connected = true
           tunnel.pipe(local).pipe(tunnel)
-          tunnel.write(session, () => {
-            cb()
-          })
+          tunnel.write(session, () => cb())
         }
         tunnel.on('error', noop)
         tunnel.on('close', () => {
