@@ -31,7 +31,7 @@ module.exports = function (opts) {
           socket.write(request.firstChunk)
           delete request.firstChunk
           request.pipe(socket).pipe(request)
-          debug(`connection from ${address} did connect to "${host.name}" via ${request.remoteAddress}:${request.remotePort}`)
+          debug(`connection from ${request.remoteAddress}:${request.remotePort} did connect to "${host.name}" via ${address}`)
         } else {
           socket.destroy()
         }
@@ -49,7 +49,7 @@ module.exports = function (opts) {
       if (host) {
         if (request) {
           request.destroy()
-          debug(`connection from ${address} connected to "${host.name}" via ${request.remoteAddress}:${request.remotePort} did close`)
+          debug(`connection from ${request.remoteAddress}:${request.remotePort} connected to "${host.name}" via ${address} did close`)
         } else {
           debug(`connection from ${address} connected to "${host.name}" did close`)
         }
