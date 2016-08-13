@@ -5,6 +5,7 @@ module.exports = function (stream) {
   var terminal = new TerminalStream()
   stream.pipe(terminal).pipe(stream)
   var rpc = new RPCEngine
+  rpc.socket = stream
   rpc.serialize = JSON.stringify
   rpc.deserialize = JSON.parse
   terminal.onmessage = rpc.onmessage

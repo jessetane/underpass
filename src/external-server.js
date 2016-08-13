@@ -40,6 +40,7 @@ module.exports = function (opts) {
       if (host) {
         debug(`connection from ${address} will request a tunnel for "${host.name}"`)
         socket.firstChunk = chunk
+        host.socket.on('close', oncontrolClose)
         host.requests.push(socket)
         host.call('connect', err => {
           if (err) {
@@ -69,6 +70,7 @@ Status: ${status}\n\n${message}`)
 
     socket.on('close', () => {
       if (host) {
+        host.socket.removeListener('close', oncontrolClose)
         if (host.requests) {
           host.requests = host.requests.filter(request => request !== socket)
         }
@@ -77,5 +79,9 @@ Status: ${status}\n\n${message}`)
         debug(`connection from ${address} did close without connecting`)
       }
     })
+
+    function oncontrolClose () {
+      socket.destroy()
+    }
   }
 }

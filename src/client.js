@@ -50,12 +50,17 @@ module.exports = function (opts) {
       local.on('error', noop)
       local.on('close', () => {
         debug('local connection did close')
+        socket.removeListener('close', oncontrolClose)
         if (tunnel) {
           tunnel.destroy()
         } else {
           cb(new Error('could not open local connection'))
         }
       })
+      socket.on('close', oncontrolClose)
+      function oncontrolClose () {
+        local.destroy()
+      }
     }
 
     tunnelControl.call('register', name, (err, _session, _port) => {
