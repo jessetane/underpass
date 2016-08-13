@@ -11,6 +11,8 @@ module.exports = function (opts) {
   var controlPort = opts.controlPort
   var tunnelPort = opts.tunnelPort
   var tunnelHost = opts.tunnelHost
+  var rpcTimeout = opts.rpcTimeout || 2500
+  var ping = opts.ping !== false
 
   var socket = secure
     ? tls.connect(controlPort, tunnelHost, tlsOpts, onconnect)
@@ -22,6 +24,9 @@ module.exports = function (opts) {
     debug(`control connection did open`)
     var session = null
     var tunnelControl = rpc(socket)
+    tunnelControl.timeout = rpcTimeout
+
+    tunnelControl.methods.ping = cb => ping && cb()
 
     tunnelControl.methods.connect = cb => {
       var tunnel, local = net.connect(port, 'localhost', () => {

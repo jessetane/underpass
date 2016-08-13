@@ -10,6 +10,7 @@ module.exports = function (opts) {
   var tlsOpts = { key: opts.key, cert: opts.cert, SNICallback: opts.SNICallback }
   var controlPort = opts.controlPort
   var externalPort = opts.externalPort
+  var rpcTimeout = opts.rpcTimeout || 2500
 
   var server = secure && secure !== 'external'
     ? tls.createServer(tlsOpts, onconnection)
@@ -26,12 +27,26 @@ module.exports = function (opts) {
     debug(`connection from ${address} did open`)
 
     var host = rpc(socket)
+    host.timeout = rpcTimeout
     host.requests = []
 
     host.methods.register = function (name, cb) {
-      if (hosts.byName[name]) {
-        cb(new Error(`host "${name}" is already registered`))
+      var otherHost = hosts.byName[name]
+      if (otherHost) {
+        debug(`pinging existing registrant for "${name}"`)
+        otherHost.call('ping', err => {
+          if (err) {
+            otherHost.socket.on('close', register)
+            otherHost.socket.destroy()
+          } else {
+            cb(new Error(`host "${name}" is already registered`))
+          }
+        })
       } else {
+        register()
+      }
+
+      function register () {
         host.name = name
         host.session = crypto.randomBytes(16).toString('base64')
         hosts.byName[host.name] = host
