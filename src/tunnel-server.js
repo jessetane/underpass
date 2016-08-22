@@ -46,6 +46,7 @@ module.exports = function (opts) {
     })
 
     socket.on('error', noop)
+
     socket.on('close', () => {
       if (host) {
         if (request) {

@@ -69,6 +69,7 @@ Status: ${status}\n\n${message}`)
     })
 
     socket.on('error', noop)
+
     socket.on('close', () => {
       if (host) {
         host.socket.removeListener('close', oncontrolClose)
