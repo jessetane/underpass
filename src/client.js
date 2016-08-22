@@ -71,6 +71,12 @@ module.exports = function (opts) {
       session = _session
       socket.emit('ready', _port)
     })
+
+    setInterval(() => {
+      tunnelControl.call('ping', err => {
+        if (err) socket.emit('error', err)
+      })
+    }, 55000).unref()
   }
 }
 

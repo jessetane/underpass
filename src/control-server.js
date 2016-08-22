@@ -30,6 +30,8 @@ module.exports = function (opts) {
     host.timeout = rpcTimeout
     host.requests = []
 
+    host.methods.ping = cb => ping && cb()
+
     host.methods.register = function (name, cb) {
       var otherHost = hosts.byName[name]
       if (otherHost) {
