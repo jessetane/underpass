@@ -11,7 +11,7 @@ module.exports = function (opts) {
   var controlPort = opts.controlPort
   var tunnelPort = opts.tunnelPort
   var tunnelHost = opts.tunnelHost
-  var rpcTimeout = opts.rpcTimeout || 2500
+  var rpcTimeout = opts.rpcTimeout || 3000
   var ping = opts.ping !== false
 
   var socket = secure
