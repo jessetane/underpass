@@ -41,6 +41,7 @@ module.exports = function (opts) {
           tunnel.pipe(local).pipe(tunnel)
           tunnel.write(session, () => cb())
         }
+        tunnel.setKeepAlive(true, 55)
         tunnel.on('error', noop)
         tunnel.on('close', () => {
           debug('tunnel connection did close')
@@ -50,6 +51,7 @@ module.exports = function (opts) {
           }
         })
       })
+      local.setKeepAlive(true, 55)
       local.on('error', noop)
       local.on('close', () => {
         debug('local connection did close')
