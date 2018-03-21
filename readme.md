@@ -74,7 +74,7 @@ var server = createServer({
   externalPort: '9002',
   // secure: true,
   // SNICallback: (hostname, cb) => {
-  //   cb(new tls.createSecureContext({ /* cert, key */ }))
+  //   cb(null, new tls.createSecureContext({ /* cert, key */ }))
   // }
 })
 
