@@ -32,6 +32,7 @@ module.exports = function (opts) {
   // for name registration and new socket creation
   opts.controlServer = controlServer(opts)
   opts.controlServer.on('ready', onready)
+  opts.controlServer.on('register', (name, data)=>{opts.emit('register', name, data)})
 
   // handles connections from the external side
   opts.externalServer = externalServer(opts)
