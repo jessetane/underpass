@@ -23,16 +23,16 @@ module.exports = function (opts) {
   })
 
   function onconnection (socket) {
+    var _this = this;
     var address = `${socket.remoteAddress}:${socket.remotePort}`
     debug(`connection from ${address} did open`)
-
     var host = rpc(socket)
     host.timeout = rpcTimeout
     host.requests = []
 
     host.methods.ping = cb => cb()
 
-    host.methods.register = function (name, cb) {
+    host.methods.register = function (name, data, cb) {
       var otherHost = hosts.byName[name]
       if (otherHost) {
         debug(`pinging existing registrant for "${name}"`)
@@ -54,6 +54,7 @@ module.exports = function (opts) {
         hosts.byName[host.name] = host
         hosts.bySession[host.session] = host
         debug(`connection from ${address} registered as "${name}"`)
+        _this.emit('register', name, data)
         cb(null, host.session, externalPort)
       }
     }

@@ -13,6 +13,7 @@ module.exports = function (opts) {
   var tunnelHost = opts.tunnelHost
   var rpcTimeout = opts.rpcTimeout || 3000
   var ping = opts.ping !== false
+  var data = opts.data
 
   var socket = secure
     ? tls.connect(controlPort, tunnelHost, tlsOpts, onconnect)
@@ -66,7 +67,7 @@ module.exports = function (opts) {
       }
     }
 
-    tunnelControl.call('register', name, (err, _session, _port) => {
+    tunnelControl.call('register', name, data, (err, _session, _port) => {
       if (err) return socket.emit('error', err)
       session = _session
       socket.emit('ready', _port)

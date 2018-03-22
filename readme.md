@@ -61,6 +61,7 @@ $ up serve [OPTION]
 
 ## JavaScript API
 ``` javascript
+var http = require('http')
 var createClient = require('underpass/src/client')
 var createServer = require('underpass/src/server')
 
@@ -78,12 +79,21 @@ var server = createServer({
   // }
 })
 
+server.on('register', (name, data) => {
+  console.log('name', name);
+  console.log('data', data);
+});
+
 var client = createClient({
   tunnelHost: 'localhost',
   tunnelPort: '9000',
   controlPort: '9001',
   name: 'upper-caser',
   port: '8080',
+  data: {
+    key1: 1,
+    key2: 'text'
+  }
   // secure: true
 })
 
